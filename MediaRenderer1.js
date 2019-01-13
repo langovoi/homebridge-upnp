@@ -20,23 +20,7 @@ class MediaRenderer1 extends Device {
             this._accessory = accessory;
         }
 
-        const informationService = this.accessory.getService(homebridge.hap.Service.AccessoryInformation);
-
-        if (description.friendlyName) {
-            informationService.getCharacteristic(homebridge.hap.Characteristic.Manufacturer).updateValue(description.friendlyName);
-        }
-
-        if (description.manufacturer) {
-            informationService.getCharacteristic(homebridge.hap.Characteristic.Manufacturer).updateValue(description.manufacturer);
-        }
-
-        if (description.modelName) {
-            informationService.getCharacteristic(homebridge.hap.Characteristic.Model).updateValue(description.modelName);
-        }
-
-        if (description.serialNumber) {
-            informationService.getCharacteristic(homebridge.hap.Characteristic.SerialNumber).updateValue(description.serialNumber);
-        }
+        this._updateAccessory(description);
 
         let switchService = this.accessory.getService(homebridge.hap.Service.Lightbulb);
 
@@ -61,10 +45,28 @@ class MediaRenderer1 extends Device {
         switchService.getCharacteristic(homebridge.hap.Characteristic.Brightness)
             .on('get', this._getVolume.bind(this))
             .on('set', this._setVolume.bind(this));
+    }
+
+    _updateAccessory(description) {
+        const informationService = this.accessory.getService(homebridge.hap.Service.AccessoryInformation);
+
+        if (description.friendlyName) {
+            informationService.getCharacteristic(homebridge.hap.Characteristic.Manufacturer).updateValue(description.friendlyName);
+        }
+
+        if (description.manufacturer) {
+            informationService.getCharacteristic(homebridge.hap.Characteristic.Manufacturer).updateValue(description.manufacturer);
+        }
+
+        if (description.modelName) {
+            informationService.getCharacteristic(homebridge.hap.Characteristic.Model).updateValue(description.modelName);
+        }
+
+        if (description.serialNumber) {
+            informationService.getCharacteristic(homebridge.hap.Characteristic.SerialNumber).updateValue(description.serialNumber);
+        }
 
         this._client.subscribe('RenderingControl', this._handleEvent);
-
-        return accessory
     }
 
     onAlive() {

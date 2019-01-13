@@ -1,26 +1,17 @@
 const Client = require('node-ssdp').Client;
 const Server = require('node-ssdp').Server;
-const debug = require('debug');
-
-const clientDebug = debug('node-ssdp-client');
-const serverDebug = debug('node-ssdp-server');
-debug.enable('node-ssdp-client');
-debug.enable('node-ssdp-server');
 
 class UPnPPlatform {
     constructor(log, config, api) {
         this.log = log;
 
-        clientDebug.log = log.debug.bind(log);
-        serverDebug.log = log.debug.bind(log);
-
         this._client = new Client({
             ...config.ssdpClient,
-            customLogger: clientDebug
+            customLogger: this.log.debug.bind(this.log)
         });
         this._server = new Server({
             ...config.ssdpServer,
-            customLogger: serverDebug
+            customLogger: this.log.debug.bind(this.log)
         });
         this._devices = [];
         this._STToDevice = {

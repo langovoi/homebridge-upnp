@@ -5,6 +5,7 @@ class Device {
         this._platform = platform;
         this._USN = USN;
         this._accessory = accessory;
+        this._accessoryConfigured = false;
 
         this._client = null;
     }
@@ -27,7 +28,9 @@ class Device {
             this._client = null;
         }
 
-        this._client = new Client(location);
+        this._client = new Client(location, {
+            customLogger: this._platform.log.debug.bind(this._platform.log)
+        });
         this._client.on('error', (err) => {
             this._platform.log.error(err);
         });
@@ -40,11 +43,16 @@ class Device {
 
             let accessoryCreated = this._accessory === null;
 
-            const accessory = this._createAccessory(description);
+            if(!this._accessoryConfigured) {
+                this._createAccessory(description);
+                this._accessoryConfigured = true;
+            } else {
+                this._updateAccessory(description);
+            }
 
             if (accessoryCreated) {
                 this._platform.addDevice(this);
-                this._platform.addAccessory(accessory);
+                this._platform.addAccessory(this.accessory);
             }
         });
     }
@@ -63,6 +71,10 @@ class Device {
 
     _createAccessory() {
         throw new Error('_createAccessory must be implemented');
+    }
+
+    _updateAccessory() {
+        throw new Error('_updateAccessory must be implemented');
     }
 
     stop() {
