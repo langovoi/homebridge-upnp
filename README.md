@@ -9,10 +9,10 @@
 Most of Smart TV supports this device type.
 
 It requires implementation of [RenderingControl v1](http://upnp.org/specs/av/UPnP-av-RenderingControl-v1-Service.pdf) service,
- which allow control Volume and Mute states.
+ which allow control volume and mute states.
  
 Current implementation of plugin automatically discover UPnP devices and add Lightbulb accessory
-which allow to control Volume by slider and mute by on/off.
+which allow to control volume by slider and mute by on/off.
 
 
 ## Install
@@ -35,7 +35,7 @@ Simply add to your Homebridge config new platform called "UPnP" and restart Home
 }
 ```
 
-Also you can provide custom config for [upnp-device-client](https://github.com/langovoi/node-upnp-device-client#readme) by `ssdpClient` and `ssdpServer` options:
+Also you can provide custom config for [node-ssdp](https://github.com/diversario/node-ssdp/tree/v4.0.0) by `ssdpClient` and `ssdpServer` options:
 
 ```json
 {
