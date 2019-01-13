@@ -28,6 +28,9 @@ class Device {
         }
 
         this._client = new Client(location);
+        this._client.on('error', (err) => {
+            this._platform.log.error(err);
+        });
 
         this._client.getDeviceDescription((err, description) => {
             if (err) {
