@@ -41,7 +41,7 @@ Also you can provide custom config for [node-ssdp](https://github.com/diversario
 {
   "platforms": [
       {
-        "platfrom": "UPnP",
+        "platform": "UPnP",
         "ssdpClient": {
           "interfaces": ["br0"]
         },
