@@ -1,13 +1,18 @@
 {
   "name": "homebridge-upnp",
-  "version": "0.1.9",
+  "version": "0.1.10",
   "main": "index.js",
   "author": "Mark Langovoi <marklangovoi@gmail.com>",
   "license": "MIT",
   "keywords": [
     "homebridge-plugin",
+    "homebridge",
     "upnp",
-    "ssdp"
+    "ssdp",
+    "sonos",
+    "samsung",
+    "smart tv",
+    "remote control"
   ],
   "repository": {
     "type": "git",

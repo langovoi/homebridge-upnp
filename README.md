@@ -6,7 +6,7 @@
 
 ### [MediaRenderer v1](http://upnp.org/specs/av/UPnP-av-MediaRenderer-v1-Device.pdf)
 
-Most of Smart TV supports this device type.
+Most of Smart TV and other devices (Sonos for example) supports this device type.
 
 It requires implementation of [RenderingControl v1](http://upnp.org/specs/av/UPnP-av-RenderingControl-v1-Service.pdf) service,
  which allow control volume and mute states.
@@ -18,7 +18,7 @@ which allow to control volume by slider and mute by on/off.
 ## Install
 
 ```bash
-$ npm install -g homebridge-upnp
+$ npm install -g homebridge-upnp@^0.1.0
 ```
 
 ## Usage
@@ -57,7 +57,7 @@ You can provide custom config for [node-ssdp](https://github.com/diversario/node
 
 ### Exclude devices
 
-Found device's USN. It must be in logs of Homebridge:
+First find device's USN. It must be in logs of Homebridge:
 
 ```
 ...
@@ -72,7 +72,7 @@ Then use `excludeUSN` option:
   "platforms": [
       {
         "platform": "UPnP",
-        "excludeUSN": ["XXXXXXXXX"]
+        "excludeUSN": ["XXXXXXXXX", "XXXXXXXX"]
       }
   ]
 }
