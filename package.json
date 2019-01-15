@@ -1,6 +1,6 @@
 {
   "name": "homebridge-upnp",
-  "version": "0.1.8",
+  "version": "0.1.9",
   "main": "index.js",
   "author": "Mark Langovoi <marklangovoi@gmail.com>",
   "license": "MIT",

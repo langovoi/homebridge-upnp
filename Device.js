@@ -24,7 +24,7 @@ class Device {
                 return;
             }
 
-            this._client.unsubscribe('RenderingControl', this._handleEvent);
+            this.stop();
             this._client = null;
         }
 
@@ -50,6 +50,8 @@ class Device {
                 this._updateAccessory(description);
             }
 
+            this.onStart();
+
             if (accessoryCreated) {
                 this._platform.addDevice(this);
                 this._platform.addAccessory(this.accessory);
@@ -59,6 +61,26 @@ class Device {
 
     get accessory() {
         return this._accessory;
+    }
+
+    bye() {
+        if (this._client) {
+            if(Object.keys(this._client.subscriptions).length !== 0) {
+                this._client.subscriptions = {};
+                this._client.releaseEventingServer();
+            }
+            this._client = null;
+        }
+
+        this.onBye();
+    }
+
+    alive() {
+        this.onAlive();
+    }
+
+    onStart() {
+        throw new Error('onAlive must be implemented');
     }
 
     onAlive() {

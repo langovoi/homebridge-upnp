@@ -5,6 +5,8 @@ class UPnPPlatform {
     constructor(log, config, api) {
         this.log = log;
 
+        this._config = config;
+
         this._client = new Client({
             ...config.ssdpClient,
             customLogger: this.log.debug.bind(this.log)
@@ -14,6 +16,9 @@ class UPnPPlatform {
             customLogger: this.log.debug.bind(this.log)
         });
         this._devices = [];
+        this._preparingDevices = [];
+        this._accessoriesToRemove = [];
+
         this._STToDevice = {
             'urn:schemas-upnp-org:device:MediaRenderer:1': require('./MediaRenderer1')
         };
@@ -31,20 +36,34 @@ class UPnPPlatform {
         }
     }
 
+    _isUSNExcluded(USN) {
+        const excluded = this._config.excludeUSN || [];
+
+        return excluded.includes(USN)
+    }
+
     configureAccessory(accessory) {
         const Device = this._STToDevice[accessory.context.ST];
 
-        if (Device) {
+        if (Device && !this._isUSNExcluded(accessory.context.USN)) {
             const device = new Device(this, accessory.context.USN, accessory);
 
             this.addDevice(device);
         } else {
-            this.removeAccessory(accessory)
+            this._accessoriesToRemove.push(accessory);
         }
     }
 
     _start() {
+        this.removeAccessories(this._accessoriesToRemove);
+
+        this._accessoriesToRemove = [];
+
         this._client.on('response', (headers) => {
+            if(this._isUSNExcluded(headers.USN)) {
+                return;
+            }
+
             const Device = this._STToDevice[headers.ST];
 
             if(!Device) {
@@ -54,13 +73,24 @@ class UPnPPlatform {
             let device = this._devices.find(device => device.USN === headers.USN);
 
             if(!device) {
-                device = new Device(this, headers.USN);
+                device = this._preparingDevices.find(device => device.USN === headers.USN);
             }
 
-            device.setLocation(headers.LOCATION);
+            if(!device) {
+                device = new Device(this, headers.USN);
+                this._preparingDevices.push(device);
+            }
+
+            if(!device.hasLocation()) {
+                device.setLocation(headers.LOCATION);
+            }
         });
 
         this._server.on('advertise-alive', (headers) => {
+            if(this._isUSNExcluded(headers.USN)) {
+                return;
+            }
+
             const Device = this._STToDevice[headers.NT];
 
             if (!Device) {
@@ -70,11 +100,16 @@ class UPnPPlatform {
             let device = this._devices.find(device => device.USN === headers.USN);
 
             if(!device) {
+                device = this._preparingDevices.find(device => device.USN === headers.USN);
+            }
+
+            if(!device) {
                 device = new Device(this, headers.USN);
+                this._preparingDevices.push(device);
             }
 
             if(device.hasLocation()) {
-                device.onAlive();
+                device.alive();
             } else {
                 device.setLocation(headers.LOCATION);
             }
@@ -89,7 +124,7 @@ class UPnPPlatform {
             const device = this._devices.find(device => device.USN === headers.USN);
 
             if(device) {
-                device.onBye();
+                device.bye();
             }
         });
 
@@ -101,12 +136,16 @@ class UPnPPlatform {
         this.api.registerPlatformAccessories(require('./package.json').name, 'UPnP', [accessory]);
     }
 
-    removeAccessory(accessory) {
-        this.api.unregisterPlatformAccessories(require('./package.json').name, 'UPnP', [accessory]);
+    removeAccessories(accessories) {
+        this.api.unregisterPlatformAccessories(require('./package.json').name, 'UPnP', accessories);
     }
 
     addDevice(device) {
-        this.log('Add device', device.accessory.displayName);
+        if(this._preparingDevices.includes(device)) {
+            this._preparingDevices.splice(this._preparingDevices.indexOf(device), 1);
+        }
+
+        this.log('Add device', device.accessory.displayName, `(USN: ${device.accessory.context.USN})`);
         this._devices.push(device);
     }
 

@@ -35,7 +35,9 @@ Simply add to your Homebridge config new platform called "UPnP" and restart Home
 }
 ```
 
-Also you can provide custom config for [node-ssdp](https://github.com/diversario/node-ssdp/tree/v4.0.0) by `ssdpClient` and `ssdpServer` options:
+### Configure network interfaces
+
+You can provide custom config for [node-ssdp](https://github.com/diversario/node-ssdp/tree/v4.0.0) by `ssdpClient` and `ssdpServer` options:
 
 ```json
 {
@@ -48,6 +50,29 @@ Also you can provide custom config for [node-ssdp](https://github.com/diversario
         "ssdpServer": {
           "interfaces": ["br0"]
         }
+      }
+  ]
+}
+```
+
+### Exclude devices
+
+Found device's USN. It must be in logs of Homebridge:
+
+```
+...
+[2019-1-15 21:21:15] [UPnP] Add device [TV] Samsung 7 Series (55) (USN: XXXXXXXXX)
+...
+```
+
+Then use `excludeUSN` option:
+
+```json
+{
+  "platforms": [
+      {
+        "platform": "UPnP",
+        "excludeUSN": ["XXXXXXXXX"]
       }
   ]
 }

@@ -70,7 +70,9 @@ class MediaRenderer1 extends Device {
         if (description.serialNumber) {
             informationService.getCharacteristic(homebridge.hap.Characteristic.SerialNumber).updateValue(description.serialNumber);
         }
+    }
 
+    onStart() {
         this._client.subscribe('RenderingControl', this._handleEvent);
     }
 
@@ -95,12 +97,6 @@ class MediaRenderer1 extends Device {
     }
 
     onBye() {
-        if (this._client) {
-            this._client.subscriptions = {};
-            this._client.releaseEventingServer();
-            this._client = null;
-        }
-
         this.accessory.getService(homebridge.hap.Service.Lightbulb).getCharacteristic(homebridge.hap.Characteristic.On).updateValue(false);
     }
 
