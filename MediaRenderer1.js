@@ -9,11 +9,16 @@ class MediaRenderer1 extends Device {
     }
 
     _createAccessory(description) {
-        const UUID = description.UDN.substr('uuid:'.length);
-
         let accessory = this._accessory;
 
         if (!accessory) {
+            let UUID = description.UDN.substr('uuid:'.length);
+
+            // Some UPnP devices provide not UUID v4, so make it compatible
+            if(!homebridge.hap.uuid.isValid(UUID)) {
+                UUID = homebridge.hap.uuid.generate(UUID);
+            }
+
             accessory = new homebridge.platformAccessory(description.friendlyName, UUID);
             accessory.context.USN = this.USN;
             accessory.context.ST = 'urn:schemas-upnp-org:device:MediaRenderer:1';
