@@ -29,7 +29,7 @@ Simply add to your Homebridge config new platform called "UPnP" and restart Home
 {
   "platforms": [
       {
-        "platfrom": "UPnP"
+        "platform": "UPnP"
       }
   ]
 }
